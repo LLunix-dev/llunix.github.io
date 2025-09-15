@@ -106,60 +106,73 @@
   </div>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script>
-    // Deine Firebase-Konfiguration (ersetzen!)
-    const firebaseConfig = {
-      apiKey: "DEIN-API-KEY",
-      authDomain: "DEIN-PROJEKT.firebaseapp.com",
-      projectId: "DEIN-PROJEKT-ID",
-      storageBucket: "DEIN-PROJEKT.appspot.com",
-      messagingSenderId: "DEINE-SENDER-ID",
-      appId: "DEINE-APP-ID"
-    };
+  <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
+          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // Initialisieren
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+      const firebaseConfig = {
 
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+          apiKey: "AIzaSyAMvALfCR0bMTXDfgPv0cwMq4EgQ-THAN4",
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          document.getElementById("user-info").innerText =
-            "Eingeloggt als: " + userCredential.user.email;
-        })
-        .catch(error => {
-          alert(error.message);
-        });
-    }
+          authDomain: "helbling-answers.firebaseapp.com",
 
-    function register() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+          projectId: "helbling-answers",
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          document.getElementById("user-info").innerText =
-            "Account erstellt für: " + userCredential.user.email;
-        })
-        .catch(error => {
-          alert(error.message);
-        });
-    }
+          storageBucket: "helbling-answers.firebasestorage.app",
 
-    // Listener für Login-Status
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("user-info").innerText =
-          "Aktuell eingeloggt: " + user.email;
-      } else {
-        document.getElementById("user-info").innerText = "";
+          messagingSenderId: "113969854334",
+
+          appId: "1:113969854334:web:7e631e69664c7356f3a52f",
+
+          measurementId: "G-6X2DYGPVMZ"
+
+      };
+
+
+      // init
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // login
+      function login() {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          signInWithEmailAndPassword(auth, email, password)
+              .then(userCredential => {
+                  document.getElementById("user-info").innerText =
+                      "Logged in as: " + userCredential.user.email;
+              })
+              .catch(err => alert(err.message));
       }
-    });
+
+      // register
+      function register() {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          createUserWithEmailAndPassword(auth, email, password)
+              .then(userCredential => {
+                  document.getElementById("user-info").innerText =
+                      "Account created: " + userCredential.user.email;
+              })
+              .catch(err => alert(err.message));
+      }
+
+      // auth state listener
+      onAuthStateChanged(auth, user => {
+          if (user) {
+              document.getElementById("user-info").innerText =
+                  "Currently logged in: " + user.email;
+          } else {
+              document.getElementById("user-info").innerText = "";
+          }
+      });
+
+      // damit onclick funktioniert (globale Funktionen registrieren)
+      window.login = login;
+      window.register = register;
   </script>
 </body>
 </html>
