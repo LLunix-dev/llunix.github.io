@@ -1,178 +1,169 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Helbling Answers</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f8f8;
-    }
-
-    /* Navbar */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #333;
-      padding: 10px 20px;
-    }
-
-    nav .logo {
-      color: #fff;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav ul li {
-      margin-left: 20px;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: #fff;
-      font-weight: bold;
-    }
-
-    /* Container */
-    .container {
-      max-width: 400px;
-      margin: 50px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      background: #333;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #444;
-    }
-
-    #user-info {
-      text-align: center;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Helbling Answers</title>
+    <style>
+        body { margin:0; font-family: Arial,sans-serif; background:#f8f8f8; }
+        nav { display:flex; justify-content:space-between; align-items:center; background:#333; padding:10px 20px; }
+        nav .logo { color:#fff; font-size:20px; font-weight:bold; }
+        nav ul { list-style:none; display:flex; margin:0; padding:0; }
+        nav ul li { margin-left:20px; }
+        nav ul li a { text-decoration:none; color:#fff; font-weight:bold; cursor:pointer; }
+        .container { max-width:600px; margin:50px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+        input, button { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ddd; }
+        button { background:#333; color:#fff; font-weight:bold; border:none; cursor:pointer; }
+        button:hover { background:#444; }
+        #user-info { text-align:center; margin-top:20px; font-weight:bold; }
+        #exercises { margin-top:20px; }
+        .chapter-button { margin:5px; padding:8px 12px; border:none; background:#333; color:white; cursor:pointer; border-radius:5px; }
+        .chapter-button:hover { background:#555; }
+        .answers { margin-top:20px; padding:10px; background:#f4f4f4; border-radius:8px; }
+        .answers h3 { margin-top:0; }
+        .answers ul { list-style:none; padding-left:0; }
+        .answers li { padding:5px; border-bottom:1px solid #ddd; }
+    </style>
 </head>
 <body>
-  <nav>
+<nav>
     <div class="logo">Helbling Answers</div>
     <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Übungen</a></li>
-      <li><a href="#">Profil</a></li>
+        <li><a id="home-tab">Home</a></li>
+        <li><a id="exercises-tab">Übungen</a></li>
+        <li><a id="profile-tab">Profil</a></li>
     </ul>
-  </nav>
+</nav>
 
-  <div class="container">
+<div class="container" id="login-container">
     <h2>Login</h2>
     <input type="email" id="email" placeholder="E-Mail">
     <input type="password" id="password" placeholder="Passwort">
     <button onclick="login()">Login</button>
     <button onclick="register()">Registrieren</button>
     <div id="user-info"></div>
-  </div>
+</div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-      import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
-          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<div class="container" id="exercises-container" style="display:none;">
+    <h2>Exercises</h2>
+    <div id="chapter-list"></div>
+    <div class="answers" id="answers"></div>
+</div>
 
-      const firebaseConfig = {
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-          apiKey: "AIzaSyAMvALfCR0bMTXDfgPv0cwMq4EgQ-THAN4",
+    const firebaseConfig = {
+        apiKey: "AIzaSyAMvALfCR0bMTXDfgPv0cwMq4EgQ-THAN4",
+        authDomain: "helbling-answers.firebaseapp.com",
+        projectId: "helbling-answers",
+        storageBucket: "helbling-answers.firebasestorage.app",
+        messagingSenderId: "113969854334",
+        appId: "1:113969854334:web:7e631e69664c7356f3a52f",
+        measurementId: "G-6X2DYGPVMZ"
+    };
 
-          authDomain: "helbling-answers.firebaseapp.com",
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-          projectId: "helbling-answers",
+    function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        signInWithEmailAndPassword(auth, email, password)
+            .then(userCredential => {
+                document.getElementById("user-info").innerText = "Logged in as: " + userCredential.user.email;
+                showHome();
+            })
+            .catch(err => alert(err.message));
+    }
 
-          storageBucket: "helbling-answers.firebasestorage.app",
+    function register() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(userCredential => {
+                document.getElementById("user-info").innerText = "Account created: " + userCredential.user.email;
+                showHome();
+            })
+            .catch(err => alert(err.message));
+    }
 
-          messagingSenderId: "113969854334",
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("user-info").innerText = "Currently logged in: " + user.email;
+            showHome();
+        } else {
+            document.getElementById("login-container").style.display = "block";
+            document.getElementById("exercises-container").style.display = "none";
+            document.getElementById("user-info").innerText = "";
+        }
+    });
 
-          appId: "1:113969854334:web:7e631e69664c7356f3a52f",
+    window.login = login;
+    window.register = register;
 
-          measurementId: "G-6X2DYGPVMZ"
+    // Tab navigation
+    const homeTab = document.getElementById("home-tab");
+    const exercisesTab = document.getElementById("exercises-tab");
+    const profileTab = document.getElementById("profile-tab");
+    const exercisesContainer = document.getElementById("exercises-container");
+    const loginContainer = document.getElementById("login-container");
+    const chapterList = document.getElementById("chapter-list");
+    const answersDiv = document.getElementById("answers");
 
-      };
+    homeTab.onclick = showHome;
+    exercisesTab.onclick = showExercises;
 
+    function showHome() {
+        loginContainer.style.display = "none";
+        exercisesContainer.style.display = "none";
+        // Du könntest hier noch ein Home-Text anzeigen
+    }
+    function showExercises() {
+        if (!auth.currentUser) {
+            alert("Please log in first!");
+            return;
+        }
+        loginContainer.style.display = "none";
+        exercisesContainer.style.display = "block";
+        loadChapters();
+    }
 
-      // init
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
+    // Kapitel Buttons
+    const chapters = ["ch01","ch02","ch03","ch04","ch05","ch06","ch07","ch08","ch09","ch10"];
+    function loadChapters() {
+        chapterList.innerHTML = "";
+        chapters.forEach(ch => {
+            const btn = document.createElement("button");
+            btn.className = "chapter-button";
+            btn.textContent = ch;
+            btn.onclick = () => loadAnswers(ch);
+            chapterList.appendChild(btn);
+        });
+    }
 
-      // login
-      function login() {
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-
-          signInWithEmailAndPassword(auth, email, password)
-              .then(userCredential => {
-                  document.getElementById("user-info").innerText =
-                      "Logged in as: " + userCredential.user.email;
-              })
-              .catch(err => alert(err.message));
-      }
-
-      // register
-      function register() {
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-
-          createUserWithEmailAndPassword(auth, email, password)
-              .then(userCredential => {
-                  document.getElementById("user-info").innerText =
-                      "Account created: " + userCredential.user.email;
-              })
-              .catch(err => alert(err.message));
-      }
-
-      // auth state listener
-      onAuthStateChanged(auth, user => {
-          if (user) {
-              document.getElementById("user-info").innerText =
-                  "Currently logged in: " + user.email;
-          } else {
-              document.getElementById("user-info").innerText = "";
-          }
-      });
-
-      // damit onclick funktioniert (globale Funktionen registrieren)
-      window.login = login;
-      window.register = register;
-  </script>
+    async function loadAnswers(chapter) {
+        try {
+            const response = await fetch(`exercises/${chapter}/answers.json`);
+            if (!response.ok) throw new Error("File not found");
+            const data = await response.json();
+            answersDiv.innerHTML = `<h3>Answers for ${chapter}</h3>`;
+            data.forEach((group, groupIndex) => {
+                const list = document.createElement("ul");
+                group.forEach((answer,i) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${i+1}. ${answer}`;
+                    list.appendChild(li);
+                });
+                answersDiv.appendChild(document.createElement("hr"));
+                answersDiv.appendChild(list);
+            });
+        } catch(err) {
+            answersDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+        }
+    }
+</script>
 </body>
 </html>
